@@ -1,0 +1,4 @@
+django==4.2.6
+Pillow==10.1.0
+aiogram==2.23.1
+requests
