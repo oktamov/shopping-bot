@@ -9,6 +9,8 @@ async def generate_products_keyboard(category):
     for product_id, product_name in products.items():
         button = types.InlineKeyboardButton(text=product_name, callback_data=f"product-{product_id}")
         markup.add(button)
+    back_button = types.InlineKeyboardButton(text="Orqaga🔙", callback_data="back-to-category")
+    markup.add(back_button)
     return markup
 
 
