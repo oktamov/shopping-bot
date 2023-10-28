@@ -80,12 +80,12 @@ def get_product(product):
 
 
 @sync_to_async
-def cart_create(message, product, price, quantity):
+def cart_create(message, product, quantity):
     try:
 
         user = User.objects.get(telegram_id=message.from_user.id)
         product = Product.objects.get(id=product)
-        cart = Cart.objects.create(user=user, product=product, price=price, quantity=quantity)
+        cart = Cart.objects.create(user=user, product=product, quantity=quantity)
         return cart
     except Exception as e:
         print(str(e))
@@ -102,7 +102,7 @@ def cart_delete(user, product):
 @sync_to_async
 def all_cart_delete(user):
     user = User.objects.get(telegram_id=user.from_user.id)
-    carts = Cart.objects.filter(user=user)
+    carts = Cart.objects.filter(user=user, order__isnull=True)
     carts.delete()
 
 
@@ -137,3 +137,28 @@ def one_order_create(user, name, phone, address, product):
     cart.save()
 
     return order
+
+
+@sync_to_async
+def user_order_products(message):
+    user = User.objects.get(telegram_id=message.from_user.id)
+    carts = Cart.objects.filter(user=user)
+    products = Product.objects.filter(cart_products__in=carts)
+    result = {}
+    for product in products:
+        result[product.id] = product.name
+    return result
+
+
+@sync_to_async
+def order_carts(order):
+    carts = Cart.objects.filter(order=order)
+    result = []
+    for cart in carts:
+        cart_data = {}
+        cart_data["id"] = cart.product.id
+        cart_data["name"] = cart.product.name
+        cart_data["soni"] = cart.quantity
+        result.append(cart_data)
+    return result
+
